@@ -42,7 +42,12 @@ const Auth = ({navigation}) => {
   const {signInWithEmailAndPassword, signOutUser, signInWithGoogle, user} =
     useAuth();
 
-  console.log(user, 'contextCheck');
+  useEffect(() => {
+    if (user) {
+      navigation.navigate('Home');
+    }
+  }, [user]);
+
   return (
     <SafeAreaView style={styles.body}>
       <View style={styles.body}>

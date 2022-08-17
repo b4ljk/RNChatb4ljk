@@ -6,12 +6,17 @@ import HomeScreen from './src/home';
 import ChatScreen from './src/chat';
 import SplashScreen from './src/home/splash';
 import Auth from './src/settings/Auth';
+import {useNavigation} from '@react-navigation/native';
+import {useAuth} from './src/settings/authContext';
 
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
+  const {user} = useAuth();
+  const navigation = useNavigation();
+
   return (
-    <Stack.Navigator initialRouteName="Auth">
+    <Stack.Navigator initialRouteName="Splash">
       <Stack.Screen
         name="Home"
         component={HomeScreen}

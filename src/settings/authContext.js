@@ -7,7 +7,7 @@ export const useAuth = () => {
   return useContext(AuthContext);
 };
 export const AuthProvider = ({children}) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(undefined);
   const [initializing, setInitializing] = useState(true);
 
   function onAuthStateChanged(user) {
