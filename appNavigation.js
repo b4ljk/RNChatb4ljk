@@ -12,11 +12,18 @@ import {useAuth} from './src/settings/authContext';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
-  const {user} = useAuth();
   const navigation = useNavigation();
+  const {user} = useAuth();
 
+  useEffect(() => {
+    if (user === null) {
+      navigation.navigate('Auth');
+    } else {
+      navigation.navigate('Home');
+    }
+  }, [user]);
   return (
-    <Stack.Navigator initialRouteName="Splash">
+    <Stack.Navigator initialRouteName={user === null ? 'Auth' : 'Home'}>
       <Stack.Screen
         name="Home"
         component={HomeScreen}

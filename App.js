@@ -14,6 +14,7 @@ import {
 } from 'react-native-paper';
 import 'react-native-gesture-handler';
 import React from 'react';
+import RNBootSplash from 'react-native-bootsplash';
 import {
   SafeAreaView,
   ScrollView,
@@ -64,7 +65,7 @@ const App = () => {
   return (
     <AuthProvider>
       <PaperProvider theme={theme}>
-        <NavigationContainer>
+        <NavigationContainer onReady={() => RNBootSplash.hide()}>
           <AppNavigator />
         </NavigationContainer>
       </PaperProvider>

@@ -42,11 +42,20 @@ export const AuthProvider = ({children}) => {
     return auth().signInWithCredential(googleCredential);
   };
 
+  const registerAccount = async (email, password) => {
+    try {
+      return auth().createUserWithEmailAndPassword(email, password);
+    } catch {
+      console.log('error');
+    }
+  };
+
   const value = {
     signInWithEmailAndPassword,
     signOutUser,
     signInWithGoogle,
     user,
+    registerAccount,
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
