@@ -12,7 +12,14 @@ import {colors} from '../assets/colors';
 import {ColorSpace} from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Octicons from 'react-native-vector-icons/Octicons';
+import Toast from 'react-native-toast-message';
 import {useAuth} from './authContext';
+import {
+  LoginManager,
+  AccessToken,
+  GraphRequest,
+  GraphRequestManager,
+} from 'react-native-fbsdk-next';
 
 const DividerWithText = ({moreStyle, children}) => {
   return (
@@ -52,6 +59,24 @@ const Auth = ({navigation}) => {
       navigation.navigate('Home');
     }
   }, [user]);
+
+  const getFacebookEmail = () =>
+    new Promise(resolve => {
+      const infoRequest = new GraphRequest(
+        '/me?fields=email',
+        null,
+        (error, result) => {
+          if (error) {
+            console.log('Error fetching data: ' + error.toString());
+            resolve(null);
+            return;
+          }
+
+          resolve(result.email);
+        },
+      );
+      new GraphRequestManager().addRequest(infoRequest).start();
+    });
 
   return (
     <SafeAreaView style={styles.body}>
@@ -162,8 +187,27 @@ const Auth = ({navigation}) => {
                   console.log(res);
                   console.log('signed in');
                 })
-                .catch((err, sad) => {
-                  console.log('cunt');
+                .catch(async error => {
+                  if (
+                    error.code &&
+                    error.code ===
+                      'auth/account-exists-with-different-credential'
+                  ) {
+                    const email = await getFacebookEmail();
+                    if (email) {
+                      console.log(email);
+                      const showToast = () => {
+                        Toast.show({
+                          type: 'error',
+                          text1: 'Sorry',
+                          text2: 'This email is bound to another account',
+                          text2: 'please sign in with that account to link it',
+                        });
+                      };
+                      showToast();
+                      // fetchProvidersAndLink(email);
+                    }
+                  }
                 });
             }}
             style={{
