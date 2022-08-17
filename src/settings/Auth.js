@@ -39,8 +39,13 @@ const DividerWithText = ({moreStyle, children}) => {
 const Auth = ({navigation}) => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
-  const {signInWithEmailAndPassword, signOutUser, signInWithGoogle, user} =
-    useAuth();
+  const {
+    signInWithEmailAndPassword,
+    signOutUser,
+    signInWithGoogle,
+    user,
+    signInWithFacebook,
+  } = useAuth();
 
   useEffect(() => {
     if (user) {
@@ -106,7 +111,7 @@ const Auth = ({navigation}) => {
             }}
             activeOpacity={0.6}
             style={{
-              backgroundColor: colors.primary,
+              backgroundColor: colors.sheen,
               marginTop: 20,
               borderRadius: 12,
               paddingVertical: 10,
@@ -152,7 +157,14 @@ const Auth = ({navigation}) => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              signOutUser();
+              signInWithFacebook()
+                .then(res => {
+                  console.log(res);
+                  console.log('signed in');
+                })
+                .catch((err, sad) => {
+                  console.log('cunt');
+                });
             }}
             style={{
               backgroundColor: colors.gray100,
@@ -180,7 +192,7 @@ const Auth = ({navigation}) => {
           <TouchableOpacity style={{alignItems: 'flex-end', marginTop: 10}}>
             <Text style={{color: colors.gray600, fontSize: 12}}>
               New here ?{' '}
-              <Text style={{color: colors.blue800, fontFamily: 'Roboto-Bold'}}>
+              <Text style={{color: colors.sheen, fontFamily: 'Roboto-Bold'}}>
                 Register
               </Text>
             </Text>
