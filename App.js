@@ -26,6 +26,7 @@ import {
 } from 'react-native';
 import AppNavigator from './appNavigation';
 import {AuthProvider} from './src/settings/authContext';
+import FlashMessage from 'react-native-flash-message';
 
 const fontConfig = {
   default: {
@@ -69,6 +70,10 @@ const App = () => {
           <AppNavigator />
         </NavigationContainer>
       </PaperProvider>
+      <FlashMessage
+        position="bottom"
+        style={{height: 90, padding: 20, marginTop: 50, zIndex: 1000}}
+      />
     </AuthProvider>
   );
 };

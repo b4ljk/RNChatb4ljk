@@ -12,7 +12,6 @@ import {colors} from '../assets/colors';
 import {ColorSpace} from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Octicons from 'react-native-vector-icons/Octicons';
-import Toast from 'react-native-toast-message';
 import {useAuth} from './authContext';
 import {
   LoginManager,
@@ -20,6 +19,9 @@ import {
   GraphRequest,
   GraphRequestManager,
 } from 'react-native-fbsdk-next';
+import {showMessage, hideMessage} from 'react-native-flash-message';
+import {rntoast} from '../utils/toast';
+import auth from '@react-native-firebase/auth';
 
 const DividerWithText = ({moreStyle, children}) => {
   return (
@@ -52,6 +54,8 @@ const Auth = ({navigation}) => {
     signInWithGoogle,
     user,
     signInWithFacebook,
+    linkWithCredential,
+    savedCredentials,
   } = useAuth();
 
   useEffect(() => {
@@ -194,17 +198,30 @@ const Auth = ({navigation}) => {
                       'auth/account-exists-with-different-credential'
                   ) {
                     const email = await getFacebookEmail();
+                    //credential
+
                     if (email) {
                       console.log(email);
-                      const showToast = () => {
-                        Toast.show({
-                          type: 'error',
-                          text1: 'Sorry',
-                          text2: 'This email is bound to another account',
-                          text2: 'please sign in with that account to link it',
-                        });
-                      };
-                      showToast();
+                      rntoast(
+                        'Email already exists',
+                        'please login with email',
+                      );
+                      const providers = await auth().fetchSignInMethodsForEmail(
+                        email,
+                      );
+                      console.log(providers);
+                      if (providers[0] === 'google.com') {
+                        signInWithGoogle()
+                          .then(res => {
+                            console.log(res);
+                            console.log('signed in');
+                            console.log(savedCredentials, 'saved credential');
+                            linkWithCredential(savedCredentials);
+                          })
+                          .catch(err => {
+                            console.log(err, 'err');
+                          });
+                      }
                       // fetchProvidersAndLink(email);
                     }
                   }
