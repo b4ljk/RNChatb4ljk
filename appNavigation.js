@@ -8,6 +8,7 @@ import SplashScreen from './src/home/splash';
 import Auth from './src/settings/Auth';
 import {useNavigation} from '@react-navigation/native';
 import {useAuth} from './src/settings/authContext';
+import SettingsScreen from './src/user';
 
 const Stack = createStackNavigator();
 
@@ -42,6 +43,11 @@ const AppNavigator = () => {
       <Stack.Screen
         name="Chat"
         component={ChatScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="SettingsScreen"
+        component={SettingsScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

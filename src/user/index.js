@@ -2,18 +2,24 @@ import React, {useEffect, useState} from 'react';
 import {SafeAreaView, View, Text, TouchableOpacity} from 'react-native';
 import {useAuth} from '../settings/authContext';
 
-const HomeScreen = ({navigation}) => {
+const SettingsScreen = ({navigation}) => {
   const {signOutUser} = useAuth();
   return (
     <SafeAreaView>
-      <Text>Asdasdasd</Text>
+      <Text>Settings screen</Text>
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate('SettingsScreen');
+          signOutUser();
         }}>
-        <Text>Settings</Text>
+        <Text>Log out</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.goBack();
+        }}>
+        <Text>Back</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
 };
-export default HomeScreen;
+export default SettingsScreen;
