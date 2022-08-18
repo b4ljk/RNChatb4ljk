@@ -10,7 +10,6 @@ export const useAuth = () => {
 export const AuthProvider = ({children}) => {
   const [user, setUser] = useState(undefined);
   const [initializing, setInitializing] = useState(true);
-  const [savedCredentials, setSavedCredentials] = useState(undefined);
 
   function onAuthStateChanged(user) {
     setUser(user);
@@ -66,8 +65,7 @@ export const AuthProvider = ({children}) => {
         throw new Error('Something went wrong obtaining access token');
       }
       const credential = auth.FacebookAuthProvider.credential(data.accessToken);
-      setSavedCredentials(credential);
-      return auth().signInWithCredential(credential);
+      return [auth().signInWithCredential(credential), credential];
     } catch (error) {}
   };
 
@@ -85,7 +83,6 @@ export const AuthProvider = ({children}) => {
     registerAccount,
     signInWithFacebook,
     linkWithCredential,
-    savedCredentials,
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

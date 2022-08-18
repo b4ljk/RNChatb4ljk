@@ -55,7 +55,6 @@ const Auth = ({navigation}) => {
     user,
     signInWithFacebook,
     linkWithCredential,
-    savedCredentials,
   } = useAuth();
 
   useEffect(() => {
@@ -185,8 +184,10 @@ const Auth = ({navigation}) => {
             <View style={{width: 25}} />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => {
-              signInWithFacebook()
+            onPress={async () => {
+              const signin = await signInWithFacebook();
+              const fbCredentials = signin[1];
+              signin[0]
                 .then(res => {
                   console.log(res);
                   console.log('signed in');
@@ -210,13 +211,10 @@ const Auth = ({navigation}) => {
                         email,
                       );
                       console.log(providers);
-                      if (providers[0] === 'google.com') {
+                      if (true) {
                         signInWithGoogle()
                           .then(res => {
-                            console.log(res);
-                            console.log('signed in');
-                            console.log(savedCredentials, 'saved credential');
-                            linkWithCredential(savedCredentials);
+                            linkWithCredential(fbCredentials);
                           })
                           .catch(err => {
                             console.log(err, 'err');
