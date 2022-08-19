@@ -1,13 +1,13 @@
 import {showMessage} from 'react-native-flash-message';
 
-export const rntoast = (
+export const rntoast = ({
   message = 'Error',
   description = 'Something went wrong',
   type = 'danger',
   onPress = () => null,
   position = 'bottom',
   duration = 4500,
-) => {
+}) => {
   return showMessage({
     position,
     animated: true,

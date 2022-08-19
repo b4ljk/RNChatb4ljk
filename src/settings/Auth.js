@@ -47,8 +47,8 @@ const DividerWithText = ({moreStyle, children}) => {
 
 const Auth = ({navigation}) => {
   const passwordInput = useRef();
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const {
     signInWithEmailAndPassword,
     signOutUser,
@@ -131,16 +131,35 @@ const Auth = ({navigation}) => {
                 console.log(password, 'password');
               }}
               onSubmitEditing={() => {
+                if (password.length < 6) {
+                  rntoast({
+                    description: 'Password must be at least 6 characters',
+                  });
+                  return;
+                } else if (!email || !password) {
+                  rntoast({description: 'Please fill all fields'});
+                  return;
+                }
                 signInWithEmailAndPassword(email, password)
                   .then(() => {})
                   .catch(() => {
-                    rntoast('Invalid email or password');
+                    rntoast({description: 'Invalid email or password'});
                   });
               }}
             />
           </View>
           <TouchableOpacity
             onPress={() => {
+              if (password.length < 6) {
+                rntoast({
+                  description: 'Password must be at least 6 characters',
+                });
+                return;
+              } else if (!email || !password) {
+                rntoast({description: 'Please fill all fields'});
+                return;
+              }
+
               signInWithEmailAndPassword(email, password)
                 .then(res => {
                   console.log(res);
@@ -217,10 +236,10 @@ const Auth = ({navigation}) => {
 
                     if (email) {
                       console.log(email);
-                      rntoast(
-                        'Email already exists',
-                        'please login with email',
-                      );
+                      rntoast({
+                        message: 'Email already exists',
+                        description: 'please login with email',
+                      });
                       const providers = await auth().fetchSignInMethodsForEmail(
                         email,
                       );
