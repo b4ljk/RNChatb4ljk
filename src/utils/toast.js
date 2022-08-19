@@ -18,11 +18,11 @@ export const rntoast = (
     type,
     titleStyle: {
       fontSize: 16,
-      fontFamily: 'Mulish-Bold',
+      fontFamily: 'Roboto-Bold',
       color: 'white',
     },
     textStyle: {
-      fontFamily: 'Mulish',
+      fontFamily: 'Roboto-Regular',
       maxHeight: 60,
       lineHeight: 20,
       color: 'white',

@@ -131,7 +131,11 @@ const Auth = ({navigation}) => {
                 console.log(password, 'password');
               }}
               onSubmitEditing={() => {
-                signInWithEmailAndPassword(email, password);
+                signInWithEmailAndPassword(email, password)
+                  .then(() => {})
+                  .catch(() => {
+                    rntoast('Invalid email or password');
+                  });
               }}
             />
           </View>
