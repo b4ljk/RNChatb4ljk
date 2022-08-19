@@ -10,8 +10,8 @@ import React, {useEffect, useState} from 'react';
 import {styles} from '../assets/styles';
 import {colors} from '../assets/colors';
 import {ColorSpace} from 'react-native-reanimated';
-import Icon from 'react-native-vector-icons/FontAwesome5';
-import Octicons from 'react-native-vector-icons/Octicons';
+// import Icon from 'react-native-vector-icons/FontAwesome5';
+// import Octicons from 'react-native-vector-icons/Octicons';
 import {useAuth} from './authContext';
 import {
   LoginManager,
@@ -103,7 +103,7 @@ const Auth = ({navigation}) => {
             Login
           </Text>
           <View style={[styles.row, styles.center]}>
-            <Icon name="at" size={22} color={colors.gray500} />
+            {/* <Icon name="at" size={22} color={colors.gray500} /> */}
             <TextInput
               placeholder="Email"
               style={styles.textInput}
@@ -113,7 +113,7 @@ const Auth = ({navigation}) => {
             />
           </View>
           <View style={[styles.row, styles.center, {marginTop: 20}]}>
-            <Octicons name="shield-lock" size={23} color={colors.gray500} />
+            {/* <Octicons name="shield-lock" size={23} color={colors.gray500} /> */}
             <TextInput
               placeholder="Password"
               style={styles.textInput}
