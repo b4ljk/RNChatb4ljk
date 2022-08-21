@@ -10,10 +10,14 @@ import {
 import {styles} from '../assets/styles';
 import {useAuth} from '../settings/authContext';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import {colors} from '../assets/colors';
 import {color} from 'react-native-reanimated';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import SettingsScreen from '../user';
+const Tab = createBottomTabNavigator();
 
-const HomeScreen = ({navigation}) => {
+const HomeScreenComponent = ({navigation}) => {
   const {signOutUser} = useAuth();
   const [data, setData] = useState([
     {
@@ -117,7 +121,7 @@ const HomeScreen = ({navigation}) => {
           </View>
         </View>
       </SafeAreaView>
-      <View
+      {/* <View
         style={{
           backgroundColor: colors.pink400,
           flexDirection: 'row',
@@ -134,10 +138,28 @@ const HomeScreen = ({navigation}) => {
           onPress={() => {
             navigation.navigate('SettingsScreen');
           }}>
-          <Text>Settings</Text>
+          <Ionicons name="settings-outline" />
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 };
+
+const HomeScreen = () => {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen
+        name="Home"
+        component={HomeScreenComponent}
+        options={{headerShown: false}}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{headerShown: false}}
+      />
+    </Tab.Navigator>
+  );
+};
+
 export default HomeScreen;
