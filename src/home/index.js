@@ -159,7 +159,7 @@ const HomeScreen = () => {
               : route.name;
 
           const isFocused = state.index === index;
-
+          const {icon} = route.params;
           const onPress = () => {
             const event = navigation.emit({
               type: 'tabPress',
@@ -189,6 +189,7 @@ const HomeScreen = () => {
               onPress={onPress}
               onLongPress={onLongPress}
               style={{flex: 1}}>
+              <Ionicons name={icon} size={25} />
               <Text style={{color: isFocused ? '#673ab7' : '#222'}}>
                 {label}
               </Text>
@@ -202,11 +203,14 @@ const HomeScreen = () => {
     <Tab.Navigator tabBar={props => <MyTabBar {...props} />}>
       <Tab.Screen
         name="Home"
+        initialParams={{icon: 'home'}}
         component={HomeScreenComponent}
         options={{headerShown: false}}
       />
       <Tab.Screen
         name="Settings"
+        settingsIcon="settings-outline"
+        initialParams={{icon: 'settings-outline'}}
         component={SettingsScreen}
         options={{headerShown: false}}
       />
