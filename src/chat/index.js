@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {colors} from '../assets/colors';
 import {styles} from '../assets/styles';
+import * as Animatable from 'react-native-animatable';
 
 const ChatScreen = ({navigation, route}) => {
     const {responderName} = route.params;
