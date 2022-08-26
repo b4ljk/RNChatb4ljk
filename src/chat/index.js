@@ -1,12 +1,22 @@
 import React, {useEffect, useState} from 'react';
-import {SafeAreaView, View, Text, TextInput, TouchableOpacity, FlatList} from 'react-native';
+import {
+    SafeAreaView,
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    FlatList,
+    ActivityIndicator,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {colors} from '../assets/colors';
 import {styles} from '../assets/styles';
 import * as Animatable from 'react-native-animatable';
+import firestore from '@react-native-firebase/firestore';
 
 const ChatScreen = ({navigation, route}) => {
+    const [loading, setLoading] = useState(true);
     const {responderName} = route.params;
     const [chatData, setChatData] = useState([
         {
@@ -30,6 +40,17 @@ const ChatScreen = ({navigation, route}) => {
             isUser: false,
         },
     ]);
+
+    useEffect(() => {
+        const subscriber = firestore()
+            .collection('Users')
+            .onSnapshot(() => {
+                // see next step
+            });
+
+        // Unsubscribe from events when no longer in use
+        return () => subscriber();
+    }, []);
 
     const chatRenderItem = ({item}) => {
         return item.isUser ? (
