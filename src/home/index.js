@@ -144,7 +144,9 @@ const HomeScreenComponent = ({navigation}) => {
                             />
                         </View>
                         <View>
-                            <Icon name="pencil-square-o" color={colors.sheen} size={25} />
+                            <TouchableOpacity>
+                                <Icon name="pencil-square-o" color={colors.sheen} size={25} />
+                            </TouchableOpacity>
                         </View>
                     </View>
                     <View style={styles.body}>
