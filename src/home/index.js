@@ -1,5 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import {SafeAreaView, View, Text, Image, TouchableOpacity, FlatList, TextInput} from 'react-native';
+import {
+    SafeAreaView,
+    View,
+    Text,
+    Image,
+    TouchableOpacity,
+    Modal,
+    FlatList,
+    TextInput,
+} from 'react-native';
 import {styles} from '../assets/styles';
 import {useAuth} from '../settings/authContext';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -14,6 +23,7 @@ import SettingsScreen from '../user';
 const Tab = createBottomTabNavigator();
 
 const HomeScreenComponent = ({navigation}) => {
+    const [isModalVisible, setIsModalVisible] = useState(false);
     const [data, setData] = useState([
         {
             id: 1,
@@ -144,7 +154,10 @@ const HomeScreenComponent = ({navigation}) => {
                             />
                         </View>
                         <View>
-                            <TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setIsModalVisible(!isModalVisible);
+                                }}>
                                 <Icon name="pencil-square-o" color={colors.sheen} size={25} />
                             </TouchableOpacity>
                         </View>
