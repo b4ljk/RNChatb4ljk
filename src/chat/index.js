@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
     SafeAreaView,
     View,
@@ -8,6 +8,8 @@ import {
     FlatList,
     ActivityIndicator,
     RefreshControl,
+    KeyboardAvoidingView,
+    TouchableWithoutFeedback,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -16,12 +18,15 @@ import {styles} from '../assets/styles';
 import * as Animatable from 'react-native-animatable';
 import firestore from '@react-native-firebase/firestore';
 import {useAuth} from '../settings/authContext';
+import {Surface} from 'react-native-paper';
 
 const ChatScreen = ({navigation, route}) => {
     const {user} = useAuth();
     const [lastDocument, setLastDocument] = useState();
     const [loading, setLoading] = useState(true);
     const {responderName} = route.params;
+    const messageRef = useRef();
+    const [keyBoardSwipeY, setKeyBoardSwipeY] = useState(0);
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
     const [chatData, setChatData] = useState([]);
@@ -32,8 +37,9 @@ const ChatScreen = ({navigation, route}) => {
     useEffect(() => {
         dbQuery = dbQuery.orderBy('time', 'desc');
         const subscriber = dbQuery.limit(25).onSnapshot(querySnapshot => {
-            setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
-
+            if (!lastDocument) {
+                setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
+            }
             const data = [...chatData];
             querySnapshot?.forEach(documentSnapshot => {
                 data.push({
@@ -61,13 +67,18 @@ const ChatScreen = ({navigation, route}) => {
     };
 
     const loadMore = () => {
-        if (lastDocument && chatData.length <= 25) {
+        console.log(chatData.length, 'chat data length');
+        console.log(lastDocument, 'last document');
+        if (lastDocument && chatData.length >= 25) {
+            dbQuery = dbQuery.orderBy('time', 'desc');
+            console.log('getting next items');
             dbQuery
                 .startAfter(lastDocument)
                 .limit(25)
                 .get()
                 .then(querySnapshot => {
                     const data = [...chatData];
+                    setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
                     querySnapshot?.forEach(documentSnapshot => {
                         if (
                             data.find(item => {
@@ -93,6 +104,7 @@ const ChatScreen = ({navigation, route}) => {
                 style={{
                     backgroundColor: colors.blue300,
                     margin: 3,
+                    marginHorizontal: 5,
                     borderRadius: 12,
                     paddingHorizontal: 8,
                     paddingVertical: 4,
@@ -118,6 +130,7 @@ const ChatScreen = ({navigation, route}) => {
     };
 
     const pullToRefresh = () => {
+        console.log('here');
         loadMore();
     };
 
@@ -133,7 +146,7 @@ const ChatScreen = ({navigation, route}) => {
                 </TouchableOpacity>
                 <Text style={{fontSize: 18}}>{responderName}</Text>
             </View>
-            <View style={[styles.body]}>
+            <View style={[styles.body, {flex: 10}]}>
                 <FlatList
                     onEndReached={pullToRefresh}
                     // onRefresh={pullToRefresh}
@@ -142,40 +155,88 @@ const ChatScreen = ({navigation, route}) => {
                     // //     <RefreshControl refreshing={loading} onRefresh={pullToRefresh} />
                     // // }
                     inverted
+                    // style={{flexGrow: 0}}
                     data={chatData}
                     renderItem={chatRenderItem}
                 />
             </View>
-            <View style={[styles.row, {alignItems: 'flex-end', marginBottom: 6}]}>
-                <TouchableOpacity style={{paddingHorizontal: 6}}>
-                    <Ionicons name="ios-camera" size={25} />
-                </TouchableOpacity>
-                <TouchableOpacity style={{paddingHorizontal: 6}}>
-                    <Ionicons name="ios-image" size={25} />
-                </TouchableOpacity>
-                <TextInput
-                    placeholder="Aa"
-                    returnKeyType="send"
-                    multiline
-                    value={message}
-                    onChange={e => {
-                        setMessage(e.nativeEvent.text);
-                        console.log(e.nativeEvent.text);
+            <KeyboardAvoidingView
+                onTouchStart={e => setKeyBoardSwipeY(e.nativeEvent.pageY)}
+                onTouchEnd={e => {
+                    if (keyBoardSwipeY - e.nativeEvent.pageY < -20) messageRef.current.blur();
+                }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                <TouchableOpacity
+                    activeOpacity={0.9}
+                    onPress={() => {
+                        messageRef.current.focus();
                     }}
-                    style={{
-                        backgroundColor: colors.gray200,
-                        borderRadius: 12,
-                        padding: 0,
-                        maxHeight: 80,
-                        paddingHorizontal: 5,
-                        minWidth: '30%',
-                        maxWidth: '70%',
-                    }}
-                />
-                <TouchableOpacity onPress={sendMessage} style={{paddingHorizontal: 6}}>
-                    <Ionicons name="ios-paper-plane" size={25} />
+                    style={[
+                        styles.row,
+                        {
+                            marginTop: 6,
+                            paddingHorizontal: 10,
+                            alignItems: 'flex-end',
+                            marginBottom: 6,
+                            backgroundColor: colors.gray200,
+                            borderRadius: 12,
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            paddingVertical: 5,
+                            marginHorizontal: 5,
+                            minHeight: 40,
+                        },
+                    ]}>
+                    <TextInput
+                        returnKeyLabel="return"
+                        ref={messageRef}
+                        placeholder="Aa"
+                        multiline
+                        value={message}
+                        onChange={e => {
+                            setMessage(e.nativeEvent.text);
+                            console.log(e.nativeEvent.text);
+                        }}
+                        style={{
+                            backgroundColor: colors.gray200,
+                            borderRadius: 12,
+                            paddingVertical: 0,
+                            maxHeight: 120,
+                            paddingHorizontal: 5,
+                            minWidth: '30%',
+                            maxWidth: '70%',
+                        }}
+                    />
+                    {message === '' ? (
+                        <View style={{flexDirection: 'row'}}>
+                            <TouchableOpacity style={{paddingHorizontal: 6}}>
+                                <Ionicons name="ios-camera" size={25} />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={{paddingHorizontal: 6}}>
+                                <Ionicons name="ios-image" size={25} />
+                            </TouchableOpacity>
+                        </View>
+                    ) : (
+                        <TouchableOpacity
+                            onPress={sendMessage}
+                            style={{
+                                paddingHorizontal: 10,
+                                // backgroundColor: colors.red,
+                                alignSelf: 'flex-end',
+                                paddingBottom: 3,
+                            }}>
+                            <Text
+                                style={{
+                                    fontFamily: 'Roboto-Bold',
+                                    fontSize: 18,
+                                    color: colors.sheen,
+                                }}>
+                                Send
+                            </Text>
+                        </TouchableOpacity>
+                    )}
                 </TouchableOpacity>
-            </View>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 };

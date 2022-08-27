@@ -26,7 +26,9 @@ const SettingsScreen = ({navigation}) => {
                     style={{height: 70, width: 70, borderRadius: 70}}
                     resizeMode="contain"
                     source={{
-                        uri: user.photoURL,
+                        uri:
+                            user.photoURL ||
+                            'https://static.vecteezy.com/system/resources/thumbnails/005/545/335/small/user-sign-icon-person-symbol-human-avatar-isolated-on-white-backogrund-vector.jpg',
                     }}
                 />
                 <Text style={{fontFamily: 'Roboto-Bold', fontSize: 16}}>{user.displayName}</Text>

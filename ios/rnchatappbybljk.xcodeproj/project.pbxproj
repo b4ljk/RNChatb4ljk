@@ -643,6 +643,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = rnchatappbybljk/rnchatappbybljk.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = MA3NUVBNLB;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = rnchatappbybljk/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -670,6 +671,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = rnchatappbybljk/rnchatappbybljk.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = MA3NUVBNLB;
 				INFOPLIST_FILE = rnchatappbybljk/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

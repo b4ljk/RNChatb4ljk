@@ -258,7 +258,11 @@ const HomeScreen = () => {
                                             borderWidth: 1.5,
                                             borderColor: isFocused ? colors.sheen : colors.gray100,
                                         }}
-                                        source={{uri: user.photoURL}}
+                                        source={{
+                                            uri:
+                                                user.photoURL ||
+                                                'https://static.vecteezy.com/system/resources/thumbnails/005/545/335/small/user-sign-icon-person-symbol-human-avatar-isolated-on-white-backogrund-vector.jpg',
+                                        }}
                                     />
                                 ) : (
                                     <Image

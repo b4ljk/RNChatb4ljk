@@ -27,6 +27,7 @@ const CustomTextInput = forwardRef(
                 {customIcon && customIcon(isFocused ? colors.sheen : colors.gray500)}
                 <TextInput
                     ref={ref}
+                    placeholderTextColor={colors.gray400}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
                     placeholder={placeholder}
