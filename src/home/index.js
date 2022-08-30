@@ -5,9 +5,9 @@ import {
     Text,
     Image,
     TouchableOpacity,
-    Modal,
     FlatList,
     TextInput,
+    KeyboardAvoidingView,
 } from 'react-native';
 import {styles} from '../assets/styles';
 import {useAuth} from '../settings/authContext';
@@ -19,6 +19,8 @@ import {color} from 'react-native-reanimated';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {TouchableRipple} from 'react-native-paper';
 import SettingsScreen from '../user';
+import firestore from '@react-native-firebase/firestore';
+import Modal from 'react-native-modal';
 
 const Tab = createBottomTabNavigator();
 
@@ -58,6 +60,22 @@ const HomeScreenComponent = ({navigation}) => {
             isRead: true,
         },
     ]);
+
+    //write user information to database
+    const {user} = useAuth();
+    const db = firestore().collection('usersData');
+    useEffect(() => {
+        console.log(user);
+        if (user) {
+            db.doc(user.uid).set({
+                userName: user.displayName,
+                email: user.email,
+                avatar: user.photoURL,
+                lastOnline: firestore.FieldValue.serverTimestamp(),
+            });
+        }
+    }, [user]);
+    console.log(isModalVisible);
     const RenderEachChat = ({item}) => {
         return (
             <TouchableOpacity
@@ -140,6 +158,7 @@ const HomeScreenComponent = ({navigation}) => {
                                 flexDirection: 'row',
                                 alignItems: 'center',
                                 paddingHorizontal: 10,
+                                maxWidth: '70%',
                             }}>
                             <SimpleLineIcons size={15} name="magnifier" />
                             <TextInput
@@ -156,7 +175,7 @@ const HomeScreenComponent = ({navigation}) => {
                         <View>
                             <TouchableOpacity
                                 onPress={() => {
-                                    setIsModalVisible(!isModalVisible);
+                                    setIsModalVisible(true);
                                 }}>
                                 <Icon name="pencil-square-o" color={colors.sheen} size={25} />
                             </TouchableOpacity>
@@ -171,26 +190,60 @@ const HomeScreenComponent = ({navigation}) => {
                     </View>
                 </View>
             </SafeAreaView>
-            {/* <View
-        style={{
-          backgroundColor: colors.pink400,
-          flexDirection: 'row',
-        }}>
-        <TouchableOpacity
-          style={{flex: 1, height: 50}}
-          onPress={() => {
-            navigation.navigate('SettingsScreen');
-          }}>
-          <Text>Settings</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{flex: 1, height: 50, backgroundColor: colors.pink600}}
-          onPress={() => {
-            navigation.navigate('SettingsScreen');
-          }}>
-          <Ionicons name="settings-outline" />
-        </TouchableOpacity>
-      </View> */}
+            <Modal
+                style={{margin: 0, padding: 0}}
+                onBackdropPress={() => {
+                    setIsModalVisible(false);
+                }}
+                isVisible={isModalVisible}>
+                <View style={{flex: 1}} />
+                <View
+                    style={{
+                        backgroundColor: colors.white,
+                        flex: 9,
+                        borderTopLeftRadius: 20,
+                        borderTopRightRadius: 20,
+                        overflow: 'hidden',
+                    }}>
+                    <View style={{paddingVertical: 10, backgroundColor: colors.gray50}}>
+                        <Text
+                            style={{
+                                alignSelf: 'center',
+                                fontFamily: 'Roboto-Bold',
+                                color: colors.black,
+                                fontSize: 16,
+                            }}>
+                            New message
+                        </Text>
+                    </View>
+                    <View
+                        style={{
+                            borderRadius: 5,
+                            height: 30,
+                            backgroundColor: colors.gray200,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            paddingHorizontal: 10,
+                            marginHorizontal: 10,
+                        }}>
+                        <SimpleLineIcons size={15} name="magnifier" />
+                        <TextInput
+                            placeholder="To : "
+                            onChangeText={text => {
+                                console.log(text);
+                            }}
+                            style={{
+                                width: '100%',
+                                backgroundColor: colors.gray200,
+                                borderRadius: 12,
+                                height: 30,
+                                padding: 0,
+                                paddingHorizontal: 5,
+                            }}
+                        />
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -198,7 +251,8 @@ const HomeScreenComponent = ({navigation}) => {
 const HomeScreen = () => {
     const {user} = useAuth();
 
-    function MyTabBar({state, descriptors, navigation}) {
+    function MyTabBar({state, descriptors, navigation, ...rest}) {
+        console.log(state, descriptors, navigation);
         return (
             <View style={{flexDirection: 'row', backgroundColor: colors.gray50}}>
                 {state.routes.map((route, index) => {
@@ -300,7 +354,9 @@ const HomeScreen = () => {
         );
     }
     return (
-        <Tab.Navigator tabBar={props => <MyTabBar {...props} />}>
+        <Tab.Navigator
+            screenOptions={{tabBarHideOnKeyboard: true}}
+            tabBar={props => <MyTabBar {...props} />}>
             <Tab.Screen
                 name="Chats"
                 initialParams={{icon: 'chatbubble'}}
