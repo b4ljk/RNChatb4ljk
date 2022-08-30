@@ -39,6 +39,7 @@ const Auth = ({navigation}) => {
     const passwordInput = useRef();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isLogin, setIsLogin] = useState(true);
     const {
         signInWithEmailAndPassword,
         signOutUser,
@@ -71,6 +72,28 @@ const Auth = ({navigation}) => {
             new GraphRequestManager().addRequest(infoRequest).start();
         });
 
+    const onSubmitAuth = () => {
+        if (password.length < 6) {
+            rntoast({
+                description: 'Password must be at least 6 characters',
+            });
+            return;
+        } else if (!email || !password) {
+            rntoast({description: 'Please fill all fields'});
+            return;
+        }
+
+        signInWithEmailAndPassword(email, password)
+            .then(res => {
+                console.log(res);
+                console.log('signed in');
+                // navigation.navigate('Home');
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    };
+
     return (
         <SafeAreaView style={styles.body}>
             <View style={styles.body}>
@@ -89,7 +112,7 @@ const Auth = ({navigation}) => {
                 </View>
                 <View style={[styles.container, {paddingHorizontal: 30}]}>
                     <Text style={{fontFamily: 'Roboto-Bold', fontSize: 30, marginBottom: 10}}>
-                        Login
+                        {isLogin === true ? 'Login' : 'Sign Up'}
                     </Text>
                     <View style={[styles.row, styles.center]}>
                         <CustomTextInput
@@ -122,46 +145,11 @@ const Auth = ({navigation}) => {
                                 setPassword(e.nativeEvent.text);
                                 console.log(password, 'password');
                             }}
-                            onSubmitEditing={() => {
-                                if (password.length < 6) {
-                                    rntoast({
-                                        description: 'Password must be at least 6 characters',
-                                    });
-                                    return;
-                                } else if (!email || !password) {
-                                    rntoast({description: 'Please fill all fields'});
-                                    return;
-                                }
-                                signInWithEmailAndPassword(email, password)
-                                    .then(() => {})
-                                    .catch(() => {
-                                        rntoast({description: 'Invalid email or password'});
-                                    });
-                            }}
+                            onSubmitEditing={onSubmitAuth}
                         />
                     </View>
                     <TouchableOpacity
-                        onPress={() => {
-                            if (password.length < 6) {
-                                rntoast({
-                                    description: 'Password must be at least 6 characters',
-                                });
-                                return;
-                            } else if (!email || !password) {
-                                rntoast({description: 'Please fill all fields'});
-                                return;
-                            }
-
-                            signInWithEmailAndPassword(email, password)
-                                .then(res => {
-                                    console.log(res);
-                                    console.log('signed in');
-                                    // navigation.navigate('Home');
-                                })
-                                .catch(err => {
-                                    console.log(err);
-                                });
-                        }}
+                        onPress={onSubmitAuth}
                         activeOpacity={0.6}
                         style={{
                             backgroundColor: colors.sheen,
@@ -170,7 +158,9 @@ const Auth = ({navigation}) => {
                             paddingVertical: 10,
                         }}>
                         <View style={styles.center}>
-                            <Text style={[styles.whiteTextB]}>Login</Text>
+                            <Text style={[styles.whiteTextB]}>
+                                {isLogin === true ? 'Login' : 'Sign Up'}
+                            </Text>
                         </View>
                     </TouchableOpacity>
                     <DividerWithText moreStyle={{marginVertical: 20}}>OR</DividerWithText>
