@@ -26,6 +26,7 @@ const Tab = createBottomTabNavigator();
 
 const HomeScreenComponent = ({navigation}) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [searchData, setSearchData] = useState('');
     const [data, setData] = useState([
         {
             id: 1,
@@ -65,22 +66,38 @@ const HomeScreenComponent = ({navigation}) => {
     const {user} = useAuth();
     const db = firestore().collection('usersData');
     useEffect(() => {
-        console.log(user);
         if (user) {
             db.doc(user.uid).set({
                 userName: user.displayName,
                 email: user.email,
                 avatar: user.photoURL,
                 lastOnline: firestore.FieldValue.serverTimestamp(),
+                uid: user.uid,
             });
         }
     }, [user]);
-    console.log(isModalVisible);
+
+    const searchFunction = async text => {
+        const users = await firestore().collection('usersData').orderBy('userName', 'asc').get();
+        let tempArray = [];
+        users.forEach(doc => {
+            if (doc.data().userName.toLowerCase().includes(text.toLowerCase())) {
+                tempArray.push(doc.data());
+                console.log(doc.data());
+            }
+        });
+        setSearchData(tempArray);
+    };
+
     const RenderEachChat = ({item}) => {
         return (
             <TouchableOpacity
                 onPress={() => {
-                    navigation.navigate('Chat', {responderName: item.userName});
+                    navigation.navigate('Chat', {
+                        responderName: item.userName,
+                        responderProfile: item.avatar,
+                        responderId: item.uid,
+                    });
                 }}
                 style={{
                     marginVertical: 2,
@@ -229,9 +246,7 @@ const HomeScreenComponent = ({navigation}) => {
                         <SimpleLineIcons size={15} name="magnifier" />
                         <TextInput
                             placeholder="To : "
-                            onChangeText={text => {
-                                console.log(text);
-                            }}
+                            onChangeText={searchFunction}
                             style={{
                                 width: '100%',
                                 backgroundColor: colors.gray200,
@@ -242,6 +257,50 @@ const HomeScreenComponent = ({navigation}) => {
                             }}
                         />
                     </View>
+                    <FlatList
+                        style={{height: 200, backgroundColor: colors.gray50}}
+                        data={searchData}
+                        renderItem={({item}) => {
+                            return (
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setIsModalVisible(false);
+                                        navigation.navigate('Chat', {
+                                            responderName: item.userName,
+                                            responderProfile: item.avatar,
+                                            responderId: item.uid,
+                                        });
+                                    }}>
+                                    <View
+                                        style={{
+                                            marginHorizontal: 10,
+                                            marginVertical: 4,
+                                            backgroundColor: colors.gray100,
+                                            borderRadius: 10,
+                                            height: 50,
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                        }}>
+                                        <Image
+                                            style={{
+                                                height: 40,
+                                                width: 40,
+                                                borderRadius: 70,
+                                                marginHorizontal: 10,
+                                            }}
+                                            resizeMode="contain"
+                                            source={{
+                                                uri: item.avatar,
+                                            }}
+                                        />
+                                        <Text style={{fontFamily: 'Roboto-Bold', fontSize: 15}}>
+                                            {item.userName}
+                                        </Text>
+                                    </View>
+                                </TouchableOpacity>
+                            );
+                        }}
+                    />
                 </View>
             </Modal>
         </View>
@@ -252,7 +311,6 @@ const HomeScreen = () => {
     const {user} = useAuth();
 
     function MyTabBar({state, descriptors, navigation, ...rest}) {
-        console.log(state, descriptors, navigation);
         return (
             <View style={{flexDirection: 'row', backgroundColor: colors.gray50}}>
                 {state.routes.map((route, index) => {

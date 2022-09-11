@@ -10,6 +10,7 @@ import {
     RefreshControl,
     KeyboardAvoidingView,
     TouchableWithoutFeedback,
+    Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -19,21 +20,27 @@ import * as Animatable from 'react-native-animatable';
 import firestore from '@react-native-firebase/firestore';
 import {useAuth} from '../settings/authContext';
 import {Surface} from 'react-native-paper';
+import uuid from 'react-native-uuid';
 
 const ChatScreen = ({navigation, route}) => {
     const {user} = useAuth();
     const [lastDocument, setLastDocument] = useState();
     const [loading, setLoading] = useState(true);
-    const {responderName} = route.params;
+    const {responderName, responderProfile, responderId, idOfChat} = route.params;
     const messageRef = useRef();
     const [keyBoardSwipeY, setKeyBoardSwipeY] = useState(0);
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
     const [chatData, setChatData] = useState([]);
     const [nextPagination, setNextPagination] = useState(0);
+    const [firstInteraction, setFirstInteraction] = useState(undefined);
+    const [tempChatId, setTempChatId] = useState('id');
     //doc data paramaar orj ireh
-    let dbQuery = firestore().collection('chats').doc('123').collection('chats');
-
+    let dbQuery = firestore()
+        .collection('chats')
+        .doc('chatDoc')
+        .collection(idOfChat || tempChatId);
+    console.log(responderProfile, 'wrtf', responderName);
     useEffect(() => {
         dbQuery = dbQuery.orderBy('time', 'desc');
         const subscriber = dbQuery.limit(25).onSnapshot(querySnapshot => {
@@ -46,8 +53,12 @@ const ChatScreen = ({navigation, route}) => {
                     ...documentSnapshot.data(),
                     key: documentSnapshot.id,
                 });
+                console.log(documentSnapshot.data(), 'data');
             });
             setChatData(data);
+            if (data != []) {
+                setFirstInteraction(true);
+            }
         });
 
         // Unsubscribe from events when no longer in use
@@ -55,6 +66,39 @@ const ChatScreen = ({navigation, route}) => {
     }, []);
 
     const sendMessage = () => {
+        if (firstInteraction) {
+            setFirstInteraction(false);
+            const newChatId = uuid.v4();
+            setTempChatId(newChatId);
+            let newChatQuery = firestore()
+                .collection('user')
+                .doc(user?.uid)
+                .collection(`responderId`)
+                .doc('chat')
+                .set({
+                    lastChat: message,
+                    time: firestore.FieldValue.serverTimestamp(),
+                    chatId: newChatId,
+                });
+            let newChatQueryForResponder = firestore()
+                .collection('user')
+                .doc(`responderId`)
+                .collection(user?.uid)
+                .doc('chat')
+                .set({
+                    lastChat: message,
+                    time: firestore.FieldValue.serverTimestamp(),
+                    chatId: newChatId,
+                });
+
+            const newMessage = {
+                message: message,
+                time: firestore.FieldValue.serverTimestamp(),
+                userId: user.uid || '',
+            };
+            firestore().collection('chats').doc('chatDoc').collection(newChatId).add(newMessage);
+            setMessage('');
+        }
         const newMessage = {
             message: message,
             time: firestore.FieldValue.serverTimestamp(),
@@ -144,6 +188,16 @@ const ChatScreen = ({navigation, route}) => {
                     }}>
                     <Icon name="chevron-left" size={20} />
                 </TouchableOpacity>
+                <Image
+                    source={{uri: responderProfile}}
+                    style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 79,
+                        marginLeft: 5,
+                        marginRight: 10,
+                    }}
+                />
                 <Text style={{fontSize: 18}}>{responderName}</Text>
             </View>
             <View style={[styles.body, {flex: 10}]}>
