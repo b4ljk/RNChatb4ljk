@@ -2,7 +2,7 @@ export const colors = {
     bg: '#fff',
     lightBlue: '#B0D7FF',
     lavander: '#EAE8FF',
-    sheen: '#64B6AC',
+    sheen: '#6C63FF',
     jet: '#39393A',
     primary: '#6C63FF',
     black: '#000',
