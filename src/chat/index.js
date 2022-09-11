@@ -105,6 +105,8 @@ const ChatScreen = ({navigation, route}) => {
             userId: user.uid || '',
         };
         dbQuery.add(newMessage);
+        //fix becuase still creating new chats wtf right ?
+
         setMessage('');
         // setChatData([...chatData, newMessage]);
         // setMessage('');
