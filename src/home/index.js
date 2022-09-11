@@ -30,33 +30,33 @@ const HomeScreenComponent = ({navigation}) => {
         {
             id: 1,
             userName: 'Dorjo',
-            avatar: require('../assets/img/town.png'),
-            lastChat: 'Balduran come back',
+            avatar: 'https://www.looper.com/img/gallery/20-epic-movies-like-avatar-you-need-to-watch-next/l-intro-1645555067.jpg',
+            lastChat: 'It is about your car',
             time: '7:55',
             isRead: false,
         },
         {
             id: 2,
-            userName: 'Ugandan prime minister bataa',
-            avatar: require('../assets/img/town.png'),
-            lastChat: 'Balduran come back',
-            time: '17:55',
+            userName: 'Mongoliana PM',
+            avatar: 'https://yt3.ggpht.com/ytc/AMLnZu9gI3hYYS3AwFLmr0RR6UjERlqiedYSoRb_3Q=s900-c-k-c0x00ffffff-no-rj',
+            lastChat: 'I need to discuss so...',
+            time: '17:25',
             isRead: true,
         },
         {
             id: 3,
-            userName: 'Jesus',
-            lastChat: 'Balduran come back',
-            avatar: require('../assets/img/town.png'),
+            userName: 'Athew',
+            lastChat: 'Good day son',
+            avatar: 'https://www2.deloitte.com/content/dam/Deloitte/nl/Images/promo_images/deloitte-nl-cm-digital-human-promo.jpg',
             time: '1:55',
             isRead: false,
         },
         {
             id: 4,
             userName: 'Mathew',
-            lastChat: 'Balduran come back',
-            avatar: require('../assets/img/town.png'),
-            time: '17:595',
+            lastChat: "Don't forget to...",
+            avatar: 'http://keyword-hero.com/wp-content/uploads/2017/04/Cart-Hero.png',
+            time: '17:59',
             isRead: true,
         },
     ]);
@@ -99,7 +99,7 @@ const HomeScreenComponent = ({navigation}) => {
                         style={{height: 60, width: 60, borderRadius: 70, marginLeft: 10}}
                         resizeMode="contain"
                         source={{
-                            uri: 'https://www.business2community.com/wp-content/uploads/2017/08/blank-profile-picture-973460_640.png',
+                            uri: item.avatar,
                         }}
                     />
                     <View style={{flex: 4}}>
@@ -126,7 +126,7 @@ const HomeScreenComponent = ({navigation}) => {
                                         item.isRead === true ? 'Roboto-Regular' : 'Roboto-Bold',
                                     fontSize: item.isRead === true ? 13 : 14,
                                 }}>
-                                You: Balduran come home
+                                You: {item.lastChat}
                             </Text>
                         </View>
                     </View>
